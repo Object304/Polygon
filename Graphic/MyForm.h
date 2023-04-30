@@ -202,7 +202,7 @@ namespace Graphic {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(740, 206);
+			this->label1->Location = System::Drawing::Point(740, 216);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(86, 40);
 			this->label1->TabIndex = 10;
@@ -269,7 +269,7 @@ namespace Graphic {
 			// label4
 			// 
 			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(219, 478);
+			this->label4->Location = System::Drawing::Point(168, 478);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(278, 20);
 			this->label4->TabIndex = 17;
@@ -482,6 +482,18 @@ namespace Graphic {
 				A[i][0] = TEMP[i][0];
 		}
 
+		void mulXRev(double C[3][1], double T[3][3], double(&A)[3][1]) {
+			double TEMP[3][1];
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 1; j++) {
+					TEMP[i][j] = 0;
+					for (int p = 0; p < 3; p++)
+						TEMP[i][j] += T[i][p] * C[p][j];
+				}
+			for (int i = 0; i < 3; i++)
+				A[i][0] = TEMP[i][0];
+		}
+
 		void mul(double T[3][3], double C[3][3], double (&A)[3][3]) {
 			double TEMP[3][3];
 			for (int i = 0; i < 3; i++)
@@ -534,8 +546,8 @@ private: System::Void btnPlot_Click(System::Object^ sender, System::EventArgs^ e
 		}
 	double X[3][1];
 	for (int i = 0; i < count; i++) {
-		p.X = Convert::ToInt16(lbX->Items[i]->ToString());
-		p.Y = Convert::ToInt16(lbY->Items[i]->ToString());
+		p.X = Convert::ToDouble(lbX->Items[i]->ToString());
+		p.Y = Convert::ToDouble(lbY->Items[i]->ToString());
 		X[0][0] = p.X;
 		X[1][0] = p.Y;
 		X[2][0] = 1;
@@ -550,74 +562,104 @@ private: System::Void btnPlot_Click(System::Object^ sender, System::EventArgs^ e
 	delete points;
 }
 private: System::Void btn_moveLeft_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = -10;
 	T[1][0] = 0; T[1][1] = 1; T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_moveRight_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = +10;
 	T[1][0] = 0; T[1][1] = 1; T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_moveUp_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
 	T[1][0] = 0; T[1][1] = 1; T[1][2] = -10;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_moveDown_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
 	T[1][0] = 0; T[1][1] = 1; T[1][2] = +10;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleOut_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	if (lbX->SelectedIndices->Count != 0) {
 		double Tc[3][3];
 		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = Convert::ToDouble(lbX->Items[lbX->SelectedIndex]->ToString());
@@ -637,10 +679,31 @@ private: System::Void btn_scaleOut_Click(System::Object^ sender, System::EventAr
 		mul(Tc, A, A);
 		mul(T, A, A);
 		mul(TcInv, A, A);
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
-				dgv[j, i]->Value = A[i][j];
+		double X[3][1];
+		double x, y;
+		for (int i = 0; i < count; i++) {
+			x = Convert::ToDouble(lbX->Items[i]->ToString());
+			y = Convert::ToDouble(lbY->Items[i]->ToString());
+			X[0][0] = x;
+			X[1][0] = y;
+			X[2][0] = 1;
+			mulX(A, X, X);
+
+			if (lbX->SelectedIndex == i) {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbX->SetSelected(i, true);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+				lbY->SetSelected(i, true);
 			}
+			else {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+			}
+		}
 		btnPlot_Click(sender, e);
 		return;
 	}
@@ -649,18 +712,25 @@ private: System::Void btn_scaleOut_Click(System::Object^ sender, System::EventAr
 	T[0][0] = 1.1; T[0][1] = 0; T[0][2] = 0;
 	T[1][0] = 0; T[1][1] = 1; T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleIn_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	if (lbX->SelectedIndices->Count != 0) {
 		double Tc[3][3];
 		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = Convert::ToDouble(lbX->Items[lbX->SelectedIndex]->ToString());
@@ -680,10 +750,31 @@ private: System::Void btn_scaleIn_Click(System::Object^ sender, System::EventArg
 		mul(Tc, A, A);
 		mul(T, A, A);
 		mul(TcInv, A, A);
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
-				dgv[j, i]->Value = A[i][j];
+		double X[3][1];
+		double x, y;
+		for (int i = 0; i < count; i++) {
+			x = Convert::ToDouble(lbX->Items[i]->ToString());
+			y = Convert::ToDouble(lbY->Items[i]->ToString());
+			X[0][0] = x;
+			X[1][0] = y;
+			X[2][0] = 1;
+			mulX(A, X, X);
+
+			if (lbX->SelectedIndex == i) {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbX->SetSelected(i, true);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+				lbY->SetSelected(i, true);
 			}
+			else {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+			}
+		}
 		btnPlot_Click(sender, e);
 		return;
 	}
@@ -692,22 +783,29 @@ private: System::Void btn_scaleIn_Click(System::Object^ sender, System::EventArg
 	T[0][0] = 0.9; T[0][1] = 0; T[0][2] = 0;
 	T[1][0] = 0; T[1][1] = 1; T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleUp_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	if (lbX->SelectedIndices->Count != 0) {
 		double Tc[3][3];
 		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = 0;
-		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());;
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());
 		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
 		double T[3][3];
 		T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
@@ -723,10 +821,31 @@ private: System::Void btn_scaleUp_Click(System::Object^ sender, System::EventArg
 		mul(Tc, A, A);
 		mul(T, A, A);
 		mul(TcInv, A, A);
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
-				dgv[j, i]->Value = A[i][j];
+		double X[3][1];
+		double x, y;
+		for (int i = 0; i < count; i++) {
+			x = Convert::ToDouble(lbX->Items[i]->ToString());
+			y = Convert::ToDouble(lbY->Items[i]->ToString());
+			X[0][0] = x;
+			X[1][0] = y;
+			X[2][0] = 1;
+			mulX(A, X, X);
+
+			if (lbX->SelectedIndex == i) {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbX->SetSelected(i, true);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+				lbY->SetSelected(i, true);
 			}
+			else {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+			}
+		}
 		btnPlot_Click(sender, e);
 		return;
 	}
@@ -735,22 +854,29 @@ private: System::Void btn_scaleUp_Click(System::Object^ sender, System::EventArg
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
 	T[1][0] = 0; T[1][1] = 1.1; T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleDown_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	if (lbX->SelectedIndices->Count != 0) {
 		double Tc[3][3];
 		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = 0;
-		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());;
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());
 		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
 		double T[3][3];
 		T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
@@ -766,10 +892,31 @@ private: System::Void btn_scaleDown_Click(System::Object^ sender, System::EventA
 		mul(Tc, A, A);
 		mul(T, A, A);
 		mul(TcInv, A, A);
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
-				dgv[j, i]->Value = A[i][j];
+		double X[3][1];
+		double x, y;
+		for (int i = 0; i < count; i++) {
+			x = Convert::ToDouble(lbX->Items[i]->ToString());
+			y = Convert::ToDouble(lbY->Items[i]->ToString());
+			X[0][0] = x;
+			X[1][0] = y;
+			X[2][0] = 1;
+			mulX(A, X, X);
+
+			if (lbX->SelectedIndex == i) {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbX->SetSelected(i, true);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+				lbY->SetSelected(i, true);
 			}
+			else {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+			}
+		}
 		btnPlot_Click(sender, e);
 		return;
 	}
@@ -778,18 +925,25 @@ private: System::Void btn_scaleDown_Click(System::Object^ sender, System::EventA
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
 	T[1][0] = 0; T[1][1] = 0.9; T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
 	clear(pbPlot->Image, br);
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++) {
@@ -800,37 +954,145 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 	dgv[0, 2]->Value = 0; dgv[1, 2]->Value = 0; dgv[2, 2]->Value = 1;
 }
 private: System::Void btnAgainst_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
+	if (lbX->SelectedIndices->Count != 0) {
+		double Tc[3][3];
+		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = Convert::ToDouble(lbX->Items[lbX->SelectedIndex]->ToString());
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());
+		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
+		double T[3][3];
+		T[0][0] = cos(Math::PI / 12); T[0][1] = -sin(Math::PI / 12); T[0][2] = 0;
+		T[1][0] = sin(Math::PI / 12); T[1][1] = cos(Math::PI / 12); T[1][2] = 0;
+		T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
+		double TcInv[3][3];
+		inverse(Tc, TcInv);
+		double A[3][3];
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
+			}
+		mul(Tc, A, A);
+		mul(T, A, A);
+		mul(TcInv, A, A);
+		double X[3][1];
+		double x, y;
+		for (int i = 0; i < count; i++) {
+			x = Convert::ToDouble(lbX->Items[i]->ToString());
+			y = Convert::ToDouble(lbY->Items[i]->ToString());
+			X[0][0] = x;
+			X[1][0] = y;
+			X[2][0] = 1;
+			mulX(A, X, X);
+
+			if (lbX->SelectedIndex == i) {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbX->SetSelected(i, true);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+				lbY->SetSelected(i, true);
+			}
+			else {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+			}
+		}
+		btnPlot_Click(sender, e);
+		return;
+	}
+
+
 	double T[3][3];
-	double A[3][3];
 	T[0][0] = cos(Math::PI / 12); T[0][1] = -sin(Math::PI / 12); T[0][2] = 0;
 	T[1][0] = sin(Math::PI / 12); T[1][1] = cos(Math::PI / 12); T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void btnFollow_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (count == 0)
+		return;
+	if (lbX->SelectedIndices->Count != 0) {
+		double Tc[3][3];
+		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = Convert::ToDouble(lbX->Items[lbX->SelectedIndex]->ToString());
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());
+		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
+		double T[3][3];
+		T[0][0] = cos(Math::PI / 12); T[0][1] = sin(Math::PI / 12); T[0][2] = 0;
+		T[1][0] = -sin(Math::PI / 12); T[1][1] = cos(Math::PI / 12); T[1][2] = 0;
+		T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
+		double TcInv[3][3];
+		inverse(Tc, TcInv);
+		double A[3][3];
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
+			}
+		mul(Tc, A, A);
+		mul(T, A, A);
+		mul(TcInv, A, A);
+		double X[3][1];
+		double x, y;
+		for (int i = 0; i < count; i++) {
+			x = Convert::ToDouble(lbX->Items[i]->ToString());
+			y = Convert::ToDouble(lbY->Items[i]->ToString());
+			X[0][0] = x;
+			X[1][0] = y;
+			X[2][0] = 1;
+			mulX(A, X, X);
+
+			if (lbX->SelectedIndex == i) {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbX->SetSelected(i, true);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+				lbY->SetSelected(i, true);
+			}
+			else {
+				lbX->Items->RemoveAt(i);
+				lbX->Items->Insert(i, X[0][0]);
+				lbY->Items->RemoveAt(i);
+				lbY->Items->Insert(i, X[1][0]);
+			}
+		}
+		btnPlot_Click(sender, e);
+		return;
+	}
 	double T[3][3];
-	double A[3][3];
 	T[0][0] = cos(Math::PI / 12); T[0][1] = sin(Math::PI / 12); T[0][2] = 0;
 	T[1][0] = -sin(Math::PI / 12); T[1][1] = cos(Math::PI / 12); T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
-		}
-	mul(T, A, A);
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++) {
-			dgv[j, i]->Value = A[i][j];
-		}
+	double X[3][1];
+	double x, y;
+	for (int i = 0; i < count; i++) {
+		x = Convert::ToDouble(lbX->Items[i]->ToString());
+		y = Convert::ToDouble(lbY->Items[i]->ToString());
+		X[0][0] = x;
+		X[1][0] = y;
+		X[2][0] = 1;
+		mulX(T, X, X);
+		lbX->Items->RemoveAt(i);
+		lbX->Items->Insert(i, X[0][0]);
+		lbY->Items->RemoveAt(i);
+		lbY->Items->Insert(i, X[1][0]);
+	}
 	btnPlot_Click(sender, e);
 }
 private: System::Void lbX_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
