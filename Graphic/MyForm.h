@@ -44,7 +44,6 @@ namespace Graphic {
 			origin.X = pbPlot->Image->Width / 2;
 			origin.Y = pbPlot->Image->Height / 2;
 			Zero = false;
-			btnZero->Text = "Ноль\nне\nвыбран";
 		}
 
 	protected:
@@ -92,8 +91,9 @@ namespace Graphic {
 	private: System::Windows::Forms::Button^ btnAgainst;
 	private: System::Windows::Forms::Button^ btnFollow;
 	private: System::Windows::Forms::Label^ label7;
-	private: System::Windows::Forms::Button^ btnZero;
-	private: System::Windows::Forms::Label^ label8;
+	private: System::Windows::Forms::Button^ btnDecline;
+
+
 
 
 
@@ -144,8 +144,7 @@ namespace Graphic {
 			this->btnAgainst = (gcnew System::Windows::Forms::Button());
 			this->btnFollow = (gcnew System::Windows::Forms::Button());
 			this->label7 = (gcnew System::Windows::Forms::Label());
-			this->btnZero = (gcnew System::Windows::Forms::Button());
-			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->btnDecline = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pbPlot))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgv))->BeginInit();
 			this->SuspendLayout();
@@ -203,7 +202,7 @@ namespace Graphic {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(744, 216);
+			this->label1->Location = System::Drawing::Point(740, 206);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(86, 40);
 			this->label1->TabIndex = 10;
@@ -216,7 +215,7 @@ namespace Graphic {
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(99, 80);
 			this->label2->TabIndex = 11;
-			this->label2->Text = L"Масштаби-\r\nровать\r\n(Y по \r\nумолчанию)";
+			this->label2->Text = L"Масштаби-\r\nровать\r\n(Y по\r\nумолчанию)";
 			// 
 			// btn_moveLeft
 			// 
@@ -270,7 +269,7 @@ namespace Graphic {
 			// label4
 			// 
 			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(181, 478);
+			this->label4->Location = System::Drawing::Point(219, 478);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(278, 20);
 			this->label4->TabIndex = 17;
@@ -378,35 +377,25 @@ namespace Graphic {
 			this->label7->TabIndex = 28;
 			this->label7->Text = L"Поворот\r\n(вокруг нуля\r\nпо\r\nумолчанию)";
 			// 
-			// btnZero
+			// btnDecline
 			// 
-			this->btnZero->Location = System::Drawing::Point(613, 454);
-			this->btnZero->Name = L"btnZero";
-			this->btnZero->Size = System::Drawing::Size(100, 69);
-			this->btnZero->TabIndex = 25;
-			this->btnZero->Text = L"Выбрать \r\n0";
-			this->btnZero->UseVisualStyleBackColor = true;
-			this->btnZero->Click += gcnew System::EventHandler(this, &MyForm::btnZero_Click);
-			// 
-			// label8
-			// 
-			this->label8->AutoSize = true;
-			this->label8->Location = System::Drawing::Point(860, 279);
-			this->label8->Name = L"label8";
-			this->label8->Size = System::Drawing::Size(260, 20);
-			this->label8->TabIndex = 29;
-			this->label8->Text = L"(Приоритет в масштабировании)";
+			this->btnDecline->Location = System::Drawing::Point(864, 282);
+			this->btnDecline->Name = L"btnDecline";
+			this->btnDecline->Size = System::Drawing::Size(252, 26);
+			this->btnDecline->TabIndex = 29;
+			this->btnDecline->Text = L"Снять выделение";
+			this->btnDecline->UseVisualStyleBackColor = true;
+			this->btnDecline->Click += gcnew System::EventHandler(this, &MyForm::btnDecline_Click);
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1128, 635);
-			this->Controls->Add(this->label8);
+			this->Controls->Add(this->btnDecline);
 			this->Controls->Add(this->label7);
 			this->Controls->Add(this->btnFollow);
 			this->Controls->Add(this->btnAgainst);
-			this->Controls->Add(this->btnZero);
 			this->Controls->Add(this->dgv);
 			this->Controls->Add(this->label6);
 			this->Controls->Add(this->label5);
@@ -464,7 +453,7 @@ namespace Graphic {
 		void matOut(double A[3][3]) {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
-					std::cout << A[i][j];
+					std::cout << A[i][j] << " ";
 				}
 				std::cout << std::endl;
 			}
@@ -629,12 +618,15 @@ private: System::Void btn_moveDown_Click(System::Object^ sender, System::EventAr
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleOut_Click(System::Object^ sender, System::EventArgs^ e) {
-	if (Zero) {
+	if (lbX->SelectedIndices->Count != 0) {
 		double Tc[3][3];
-		Tc[0][0] = 1.1; Tc[0][1] = 0; Tc[0][2] = 0;
+		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = Convert::ToDouble(lbX->Items[lbX->SelectedIndex]->ToString());
 		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = 0;
 		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
-
+		double T[3][3];
+		T[0][0] = 1.1; T[0][1] = 0; T[0][2] = 0;
+		T[1][0] = 0; T[1][1] = 1; T[1][2] = 0;
+		T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
 		double TcInv[3][3];
 		inverse(Tc, TcInv);
 		double A[3][3];
@@ -643,12 +635,14 @@ private: System::Void btn_scaleOut_Click(System::Object^ sender, System::EventAr
 				A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
 			}
 		mul(Tc, A, A);
-		mul(A, TcInv, A);
+		mul(T, A, A);
+		mul(TcInv, A, A);
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++) {
 				dgv[j, i]->Value = A[i][j];
 			}
 		btnPlot_Click(sender, e);
+		return;
 	}
 	double T[3][3];
 	double A[3][3];
@@ -667,6 +661,32 @@ private: System::Void btn_scaleOut_Click(System::Object^ sender, System::EventAr
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleIn_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (lbX->SelectedIndices->Count != 0) {
+		double Tc[3][3];
+		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = Convert::ToDouble(lbX->Items[lbX->SelectedIndex]->ToString());
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = 0;
+		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
+		double T[3][3];
+		T[0][0] = 0.9; T[0][1] = 0; T[0][2] = 0;
+		T[1][0] = 0; T[1][1] = 1; T[1][2] = 0;
+		T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
+		double TcInv[3][3];
+		inverse(Tc, TcInv);
+		double A[3][3];
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
+			}
+		mul(Tc, A, A);
+		mul(T, A, A);
+		mul(TcInv, A, A);
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				dgv[j, i]->Value = A[i][j];
+			}
+		btnPlot_Click(sender, e);
+		return;
+	}
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 0.9; T[0][1] = 0; T[0][2] = 0;
@@ -684,6 +704,32 @@ private: System::Void btn_scaleIn_Click(System::Object^ sender, System::EventArg
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleUp_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (lbX->SelectedIndices->Count != 0) {
+		double Tc[3][3];
+		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = 0;
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());;
+		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
+		double T[3][3];
+		T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
+		T[1][0] = 0; T[1][1] = 1.1; T[1][2] = 0;
+		T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
+		double TcInv[3][3];
+		inverse(Tc, TcInv);
+		double A[3][3];
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
+			}
+		mul(Tc, A, A);
+		mul(T, A, A);
+		mul(TcInv, A, A);
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				dgv[j, i]->Value = A[i][j];
+			}
+		btnPlot_Click(sender, e);
+		return;
+	}
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
@@ -701,6 +747,32 @@ private: System::Void btn_scaleUp_Click(System::Object^ sender, System::EventArg
 	btnPlot_Click(sender, e);
 }
 private: System::Void btn_scaleDown_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (lbX->SelectedIndices->Count != 0) {
+		double Tc[3][3];
+		Tc[0][0] = 1; Tc[0][1] = 0; Tc[0][2] = 0;
+		Tc[1][0] = 0; Tc[1][1] = 1; Tc[1][2] = Convert::ToDouble(lbY->Items[lbY->SelectedIndex]->ToString());;
+		Tc[2][0] = 0; Tc[2][1] = 0; Tc[2][2] = 1;
+		double T[3][3];
+		T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
+		T[1][0] = 0; T[1][1] = 0.9; T[1][2] = 0;
+		T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
+		double TcInv[3][3];
+		inverse(Tc, TcInv);
+		double A[3][3];
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				A[i][j] = Convert::ToDouble(dgv[j, i]->Value->ToString());
+			}
+		mul(Tc, A, A);
+		mul(T, A, A);
+		mul(TcInv, A, A);
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++) {
+				dgv[j, i]->Value = A[i][j];
+			}
+		btnPlot_Click(sender, e);
+		return;
+	}
 	double T[3][3];
 	double A[3][3];
 	T[0][0] = 1; T[0][1] = 0; T[0][2] = 0;
@@ -727,21 +799,11 @@ private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e
 	dgv[0, 1]->Value = 0; dgv[1, 1]->Value = 1; dgv[2, 1]->Value = 0;
 	dgv[0, 2]->Value = 0; dgv[1, 2]->Value = 0; dgv[2, 2]->Value = 1;
 }
-private: System::Void btnZero_Click(System::Object^ sender, System::EventArgs^ e) {
-	if (Zero == false) {
-		btnZero->Text = "Ноль\nвыбран";
-		Zero = true;
-	}
-	else {
-		btnZero->Text = "Ноль\nне\nвыбран";
-		Zero = false;
-	}
-}
 private: System::Void btnAgainst_Click(System::Object^ sender, System::EventArgs^ e) {
 	double T[3][3];
 	double A[3][3];
-	T[0][0] = cos(3.14 / 12); T[0][1] = -sin(3.14 / 12); T[0][2] = 0;
-	T[1][0] = sin(3.14 / 12); T[1][1] = cos(3.14 / 12); T[1][2] = 0;
+	T[0][0] = cos(Math::PI / 12); T[0][1] = -sin(Math::PI / 12); T[0][2] = 0;
+	T[1][0] = sin(Math::PI / 12); T[1][1] = cos(Math::PI / 12); T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++) {
@@ -757,8 +819,8 @@ private: System::Void btnAgainst_Click(System::Object^ sender, System::EventArgs
 private: System::Void btnFollow_Click(System::Object^ sender, System::EventArgs^ e) {
 	double T[3][3];
 	double A[3][3];
-	T[0][0] = cos(3.14 / 12); T[0][1] = sin(3.14 / 12); T[0][2] = 0;
-	T[1][0] = -sin(3.14 / 12); T[1][1] = cos(3.14 / 12); T[1][2] = 0;
+	T[0][0] = cos(Math::PI / 12); T[0][1] = sin(Math::PI / 12); T[0][2] = 0;
+	T[1][0] = -sin(Math::PI / 12); T[1][1] = cos(Math::PI / 12); T[1][2] = 0;
 	T[2][0] = 0; T[2][1] = 0; T[2][2] = 1;
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++) {
@@ -776,6 +838,10 @@ private: System::Void lbX_SelectedIndexChanged(System::Object^ sender, System::E
 }
 private: System::Void lbY_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
 	lbX->SetSelected(lbY->SelectedIndex, true);
+}
+private: System::Void btnDecline_Click(System::Object^ sender, System::EventArgs^ e) {
+	lbX->SelectedIndices->Clear();
+	lbY->SelectedIndices->Clear();
 }
 };
 }
