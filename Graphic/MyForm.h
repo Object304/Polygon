@@ -92,7 +92,7 @@ namespace Graphic {
 	private: System::Windows::Forms::Button^ btnFollow;
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::Button^ btnDecline;
-	private: System::Windows::Forms::Button^ btnZero;
+
 
 
 
@@ -147,7 +147,6 @@ namespace Graphic {
 			this->btnFollow = (gcnew System::Windows::Forms::Button());
 			this->label7 = (gcnew System::Windows::Forms::Label());
 			this->btnDecline = (gcnew System::Windows::Forms::Button());
-			this->btnZero = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pbPlot))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dgv))->BeginInit();
 			this->SuspendLayout();
@@ -390,22 +389,11 @@ namespace Graphic {
 			this->btnDecline->UseVisualStyleBackColor = true;
 			this->btnDecline->Click += gcnew System::EventHandler(this, &MyForm::btnDecline_Click);
 			// 
-			// btnZero
-			// 
-			this->btnZero->Location = System::Drawing::Point(613, 454);
-			this->btnZero->Name = L"btnZero";
-			this->btnZero->Size = System::Drawing::Size(100, 69);
-			this->btnZero->TabIndex = 30;
-			this->btnZero->Text = L"Выбрать\r\n0";
-			this->btnZero->UseVisualStyleBackColor = true;
-			this->btnZero->Click += gcnew System::EventHandler(this, &MyForm::btnZero_Click);
-			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1128, 635);
-			this->Controls->Add(this->btnZero);
 			this->Controls->Add(this->btnDecline);
 			this->Controls->Add(this->label7);
 			this->Controls->Add(this->btnFollow);
@@ -1118,9 +1106,6 @@ private: System::Void lbY_SelectedIndexChanged(System::Object^ sender, System::E
 private: System::Void btnDecline_Click(System::Object^ sender, System::EventArgs^ e) {
 	lbX->SelectedIndices->Clear();
 	lbY->SelectedIndices->Clear();
-}
-private: System::Void btnZero_Click(System::Object^ sender, System::EventArgs^ e) {
-
 }
 };
 }
